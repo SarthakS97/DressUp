@@ -7,7 +7,7 @@ Right-click any outfit photo anywhere on the web, collect five into a **lookbook
 ## 1. Clone the repo
 
 ```bash
-git clone https://github.com/<your-username>/DressUp.git
+git clone https://github.com/SarthakS97/DressUp
 cd DressUp
 ```
 
