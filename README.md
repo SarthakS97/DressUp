@@ -1,123 +1,77 @@
-# DressUp — Chrome Extension (Part 1: Virtual Try-On)
+# DressUp — Chrome Extension
 
-## Load it in Chrome
-1. Go to `chrome://extensions`
-2. Turn on **Developer mode** (top right)
-3. Click **Load unpacked**, select this `tryon-extension` folder
-4. Pin the DressUp icon to your toolbar
+Right-click any outfit photo anywhere on the web, collect five into a **lookbook**, and see real AI virtual try-ons for all five — automatically ranked by how well each one's colors actually suit your skin tone. Built on YouCam's **AI Clothes Virtual Try-On (v4)** and **AI Fitzpatrick Skin Type Analysis** APIs.
 
-## Try it right now (mock mode — no API key needed yet)
-The extension currently runs in **mock mode**: instead of calling the real
-YouCam Apparel VTO endpoint, it fakes a ~2 second "processing" delay and
-hands back the reference garment image itself as the "result." This lets you
-test the entire flow — popup, photo upload, context menu, new tab, loading
-animation, storage, history — before the real API is wired in.
+---
 
-1. Click the extension icon → upload a full-body photo under **your fit**
-2. Go to any site with images (Pinterest, a shopping site, anywhere)
-3. Right-click an image → **Try it on** → a new tab opens and "processes"
-4. Or: open the extension → **try it on** tab → paste an image URL → **try now**
+## 1. Clone the repo
 
-## Now wired to the real AI Clothes v4 API
-`background.js` follows the actual documented flow:
-1. `POST /s2s/v2.0/file` — registers the user's photo, gets back a `file_id`
-   and a signed S3 upload URL
-2. `PUT` the photo bytes to that S3 URL
-3. `POST /s2s/v2.0/task/cloth-v4` — `{ src_file_id, ref_file_url, garment_category }` → `task_id`
-4. `GET /s2s/v2.0/task/cloth-v4/{task_id}` — polled every 2s until `task_status` is `success`/`error`
-5. `data.results.url` is the finished image
+```bash
+git clone https://github.com/<your-username>/DressUp.git
+cd DressUp
+```
 
-**To go live:** open `background.js`, set `CONFIG.API_KEY` to your real key.
-Mock mode turns off automatically once it's not the placeholder string.
+---
 
-**One spec contradiction worth knowing about:** the docs' step-by-step guide
-says to upload "a high-resolution full-body photo," but the File Specs table
-for the same target-user-image field says the photo should show only
-"the upper body... from the chest upwards" with shoulders visible. These two
-instructions conflict. I haven't tested which one the engine actually wants —
-worth doing one real test upload of a true full-body shot and one chest-up
-shot before you commit to guiding users toward either in your onboarding copy.
+## 2. Load the extension in Chrome
 
-**`garment_category`** defaults to `'auto'` in `CONFIG` — the docs say v4
-lets the engine auto-detect the garment type, which is the safest default
-for "try on literally anything I right-click." Change it if you want to force
-a specific category (`full_body`, `upper_body`, `lower_body`, `shoes`,
-`outerwear`).
+1. Open Chrome and go to `chrome://extensions`
+2. Turn on **Developer mode** — toggle in the top-right corner
+3. Click **Load unpacked**
+4. Select the `DressUp` folder you cloned (the one containing `manifest.json`)
+5. The DressUp icon (a lime "D" on a dark square) should now appear in your toolbar — pin it for easy access via the puzzle-piece icon if it's hidden
 
-**Re-upload happens on every try-on**, not just once — since the S3 upload
-URLs elsewhere in these docs carry a `ttl30` (30-minute) path segment, a
-cached `file_id` from an earlier session may not still be valid. Re-uploading
-the stored user photo each time trades a bit of extra latency for not having
-to guess at an expiry window.
+If you edit any file after loading, go back to `chrome://extensions` and click the refresh icon on the DressUp card to pick up your changes.
 
-## Pasting an image directly (not just a link)
-The "try it on" tab now accepts three ways to supply the outfit:
-1. Paste a link (text) into the field
-2. **Paste an actual image** — copy any image (screenshot, "copy image" from
-   a site, etc.) and hit ⌘V/Ctrl+V anywhere in the try-on tab, or click the
-   ⎘ button to read an image straight off the clipboard
-3. Right-click any image on the web → "Try it on"
+---
 
-A pasted image has no public URL, so it can't use the cheap `ref_file_url`
-path the way a right-clicked image can — it goes through the same 3-step
-File Upload API as the user's own photo instead, then gets sent as
-`ref_file_id`. `background.js` branches on this automatically depending on
-whether `ref.kind` is `'url'` or `'dataUrl'` — nothing to configure.
+## 3. Using DressUp
 
-## Storage note
-You asked for localStorage — worth knowing why this uses `chrome.storage.local`
-instead: MV3 background service workers have no DOM at all (no `window`, no
-`localStorage`), so plain localStorage can't be shared between the popup,
-the background worker, and the result tab. `chrome.storage.local` is the
-extension-native equivalent that actually works across all three contexts,
-with a bigger quota. Everything is still 100% local to the browser — nothing
-leaves the machine except the direct calls to YouCam's API.
+### Step 1 — Upload your photo
+Click the DressUp icon → **your fit** tab → click the polaroid → choose a clear, front-facing, full-body photo. This gets reused for every try-on and every lookbook — you only do this once.
 
-## Image compression
-`lib/imageUtils.js` resizes every stored image (user photo, reference
-garment, result) down to a max 900px edge and re-encodes as JPEG at ~72%
-quality before saving — keeps history entries small so you can rack up a lot
-of try-ons before hitting storage limits. Check the live footer in the popup
-("__ kb stored") to watch usage as you test.
+### Step 2 — Build a lookbook
+1. Click the **lookbooks** tab → type a name → **+ create**
+2. Browse the web (Pinterest, any store site, anywhere with outfit photos)
+3. Right-click any outfit image → **Add to DressUp lookbook** → pick your lookbook
+4. Repeat until the lookbook has 5 images — you can only add up to 5 per lookbook
 
-## File map
-- `manifest.json` — MV3 config
-- `popup.html/css/js` — the toolbar popup (your fit + try it on tabs)
-- `background.js` — context menu, message handling, the actual API pipeline
-- `result.html/css/js` — the tab that opens per try-on, doubles as the history grid
-- `lib/imageUtils.js` — shared compression + chrome.storage.local helpers
-- `icons/` — placeholder icons (swap for real branding whenever)
+*(If no lookbook exists yet, right-clicking will show a disabled menu item reminding you to create one in the popup first.)*
 
-## Part 2: Color Analysis (skin tone vs. garment)
-Once a try-on result is ready, a **"run color analysis"** button appears
-next to it (only after the VTO output comes back — never before). Clicking it:
+### Step 3 — Run the analysis
+Open the lookbook (click it in the **lookbooks** tab) → once it's at 5/5, click **✦ start analysis ✦**. This opens a new tab and:
+1. Runs real virtual try-on (YouCam Clothes API) for all 5 images against your photo
+2. Reads your skin tone once (YouCam Fitzpatrick API)
+3. Automatically detects the garment color in each result and scores it against your skin tone
+4. Sorts the results best-match-first
 
-1. Runs on-device face detection (bundled TinyFaceDetector model,
-   `lib/face-api.min.js` + `lib/models/` — no network call, no server) on
-   the try-on **result** image itself, not the original upload
-2. Pads the detected face box out to a proper headshot-style crop
-3. Samples the region just below that crop for the garment's dominant color
-   (pure canvas pixel math in `lib/colorAnalysis.js` — no AI involved)
-4. Sends the face crop to YouCam's Fitzpatrick Skin Type endpoint
-5. Maps the returned type (I-VI) to a reference swatch and runs a WCAG
-   contrast + hue check against the garment color, shown as a plain verdict
+Click any finished result to open it full-size, alongside the original inspiration image and the color verdict. Closed the tab? Reopen it anytime with the **view results** button in the lookbook's detail view.
 
-**Two things worth flagging honestly, called out in the UI itself too:**
-- The skin "swatch" is a standard reference color for that Fitzpatrick type,
-  not a measured color — Fitzpatrick is a melanin/burn-tan category, not an
-  RGB value. It's there to visualize the result, not to claim precision.
-- The hue comparison is a softer, approximate signal for the same reason —
-  Fitzpatrick measures depth, not undertone (warm/cool), so "similar hue"
-  is a rough proxy, not a confident undertone-clash claim. Contrast is the
-  solid part — it's the standard WCAG formula.
+### Bonus — single quick try-on
+Inside a lookbook, click any individual image (not the ✕) to instantly try on just that one look in its own tab, without running the full 5-image analysis.
 
-**Response shape unconfirmed:** the Fitzpatrick docs describe the task flow
-but don't show a sample success response body, unlike the other endpoints.
-`parseFitzpatrickResult()` in `background.js` tries several plausible field
-paths and logs the full raw response to the console on first success —
-check that log on your first real (non-mock) run and trim the fallback
-logic down to whichever path actually matched.
+---
 
-Mock mode covers this too: with the placeholder API key still in place, the
-button returns a random Fitzpatrick type after a short fake delay, so the
-whole face-crop → garment-sample → verdict UI is testable right now.
+## 4. File structure
+
+```
+DressUp/
+├── manifest.json          # MV3 config
+├── popup.html/css/js      # toolbar popup — photo upload + lookbook management
+├── background.js          # service worker — all YouCam API calls (VTO, File Upload, Fitzpatrick)
+├── lookbook.html/css/js   # the tab that runs the 5-image analysis + shows sorted results
+├── result.html/css/js     # single-image try-on result tab
+├── lib/
+│   ├── imageUtils.js      # compression + chrome.storage.local helpers
+│   ├── colorAnalysis.js   # contrast/hue math, Fitzpatrick swatch lookup
+│   ├── face-api.min.js    # bundled face detection (local, no network call)
+│   └── models/            # face-api model weights
+└── icons/
+```
+
+---
+
+## 5. Notes
+
+- Everything runs **locally in the browser** — photos, lookbooks, and results are stored in `chrome.storage.local`. Nothing goes to a server except the direct calls to YouCam's API.
+- Face detection runs fully on-device via a bundled TinyFaceDetector model — no external network call for that part.
