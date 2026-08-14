@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>DressUp — Lookbook</title>
+<link rel="stylesheet" href="lookbook.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="lheader">
+      <div class="wordmark">
+        <span class="wordmark-main">Dress</span><span class="wordmark-accent">Up</span>
+      </div>
+      <div class="lookbook-name" id="lookbookName"></div>
+    </header>
+
+    <section class="state" id="errorState" style="display:none;">
+      <div class="big-emoji">💀</div>
+      <p id="errorText">something went wrong</p>
+    </section>
+
+    <section class="state" id="progressState" style="display:none;">
+      <div class="progress-polaroid">
+        <div class="progress-shimmer"></div>
+      </div>
+      <p class="progress-text" id="progressText">getting started…</p>
+      <p class="progress-count" id="progressCount"></p>
+    </section>
+
+    <section class="results-wrap" id="resultsWrap" style="display:none;">
+      <p class="results-hint" id="resultsHint"></p>
+      <div class="results-grid" id="resultsGrid"></div>
+    </section>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose">✕</button>
+    <div class="lightbox-content" id="lightboxContent">
+      <div class="lightbox-ref-thumb" id="lightboxRefThumb"><img id="lightboxRefImg" alt="reference" /></div>
+      <img id="lightboxImg" alt="Expanded look" />
+      <div class="lightbox-info" id="lightboxInfo"></div>
+    </div>
+  </div>
+
+  <script src="lib/imageUtils.js"></script>
+  <script src="lib/colorAnalysis.js"></script>
+  <script src="lib/face-api.min.js"></script>
+  <script src="lookbook.js"></script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>DressUp</title>
+<link rel="stylesheet" href="result.css" />
+</head>
+<body>
+  <div class="page">
+    <header class="rheader">
+      <div class="wordmark">
+        <span class="wordmark-main">Dress</span><span class="wordmark-accent">Up</span>
+      </div>
+    </header>
+
+    <!-- no photo error state -->
+    <section class="state" id="noPhotoState" style="display:none;">
+      <div class="big-emoji">📸</div>
+      <h1>need your fit pic first</h1>
+      <p>open the TryOn extension icon and upload a full-body photo under <strong>“your fit”</strong> — then right-click any outfit again.</p>
+    </section>
+
+    <!-- single result view -->
+    <section class="state" id="singleView" style="display:none;">
+      <div class="reveal-stage" id="revealStage">
+        <div class="loading-wrap" id="loadingWrap">
+          <div class="loading-polaroid">
+            <div class="loading-shimmer"></div>
+          </div>
+          <p class="loading-text" id="loadingText">developing your fit…</p>
+        </div>
+
+        <div class="result-grid hidden" id="resultGrid">
+          <figure class="shot">
+            <img id="refImg" alt="Reference garment" />
+            <figcaption>the fit</figcaption>
+          </figure>
+          <div class="arrow">→</div>
+          <figure class="shot shot-result">
+            <img id="resultImg" alt="Try-on result" />
+            <figcaption>on you ✦</figcaption>
+          </figure>
+
+          <div class="tone-column">
+            <div class="tone-item">
+              <div class="swatch-circle is-loading" id="skinSwatchCircle"></div>
+              <span class="tone-label" id="skinToneLabel">reading…</span>
+            </div>
+            <div class="tone-item">
+              <button type="button" id="garmentPickerBtn" class="swatch-circle swatch-picker-btn" title="Pick the shirt color from the photo">
+                <svg class="picker-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 21l3-1 11-11-2-2L4 18l-1 3z"/>
+                  <path d="M14.5 5.5l4 4"/>
+                  <path d="M17.5 2.5l4 4-3.5 3.5-4-4z"/>
+                </svg>
+              </button>
+              <span class="tone-label">shirt color</span>
+            </div>
+
+            <div class="verdict-box hidden" id="verdictInline">
+              <div class="verdict" id="verdictText"></div>
+              <p class="verdict-note" id="verdictNote"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="error-wrap hidden" id="errorWrap">
+          <div class="big-emoji">💀</div>
+          <p id="errorText">something went wrong</p>
+        </div>
+      </div>
+
+      <div class="actions hidden" id="resultActions">
+        <a id="downloadBtn" class="btn btn-stamp" download="dressup-result.jpg">save image</a>
+        <button class="btn btn-ghost" id="viewHistoryBtn">see past try-ons</button>
+      </div>
+    </section>
+
+    <!-- history grid -->
+    <section class="state" id="historyView" style="display:none;">
+      <h1 class="history-title">past try-ons</h1>
+      <p class="empty-hint hidden" id="emptyHint">nothing here yet — right-click any outfit pic and hit "try it on"</p>
+      <div class="grid" id="historyGrid"></div>
+    </section>
+  </div>
+
+  <script src="lib/imageUtils.js"></script>
+  <script src="lib/colorAnalysis.js"></script>
+  <script src="lib/face-api.min.js"></script>
+  <script src="result.js"></script>
+</body>
+</html>

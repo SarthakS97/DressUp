@@ -1,0 +1,268 @@
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap');
+
+:root {
+  --bg: #0D0D0F;
+  --card: #17171B;
+  --card-2: #1E1E24;
+  --border: #2A2A31;
+  --text: #F5F5F0;
+  --muted: #8A8A93;
+  --lime: #C4F536;
+  --pink: #FF3EA5;
+  --violet: #8B7CFF;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 15% 0%, rgba(139,124,255,0.14), transparent 45%),
+    radial-gradient(circle at 85% 100%, rgba(255,62,165,0.12), transparent 45%),
+    var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+}
+
+.page {
+  max-width: 1700px;
+  margin: 0 auto;
+  padding: 32px 32px 60px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.lheader {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.wordmark {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: -0.5px;
+}
+.wordmark-main { color: var(--text); }
+.wordmark-accent { color: var(--lime); }
+.lookbook-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.state {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 16px;
+}
+.big-emoji { font-size: 44px; }
+.state p {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--pink);
+  max-width: 380px;
+}
+
+.progress-polaroid {
+  width: 160px;
+  height: 200px;
+  background: #fff;
+  padding: 8px 8px 24px;
+  border-radius: 3px;
+  transform: rotate(-2deg);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.5);
+  overflow: hidden;
+}
+.progress-shimmer {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, #1a1a1a 30%, #3a3a3a 50%, #1a1a1a 70%);
+  background-size: 200% 100%;
+  animation: shimmer 1.6s infinite ease-in-out;
+  border-radius: 1px;
+}
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.progress-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  color: var(--text) !important;
+  text-transform: lowercase;
+}
+.progress-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--muted) !important;
+}
+
+.results-wrap { display: flex; flex-direction: column; gap: 20px; }
+.results-hint {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  color: var(--muted);
+  text-align: center;
+}
+.results-hint.is-good { color: var(--lime); }
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+}
+.result-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.result-card img {
+  width: 100%;
+  aspect-ratio: 3/4;
+  object-fit: cover;
+  display: block;
+  background: var(--card-2);
+}
+.result-card.is-error img { display: none; }
+.result-card-error {
+  padding: 30px 14px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--pink);
+}
+.result-card-label {
+  padding: 12px 14px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: var(--muted);
+  text-transform: lowercase;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.result-card.done .result-card-label { color: var(--lime); }
+.card-verdict-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+}
+.card-verdict-text { font-size: 12px; }
+.card-verdict-text.good { color: var(--lime); }
+.card-verdict-text.warn { color: var(--pink); }
+.card-verdict-unknown {
+  font-size: 10.5px;
+  color: var(--muted);
+  font-style: italic;
+}
+
+.ref-thumb {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  width: 52px;
+  height: 52px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid var(--bg);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+.ref-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  aspect-ratio: unset;
+}
+.result-card.done img { cursor: pointer; }
+.result-card.done img:hover { filter: brightness(1.05); }
+
+/* ---------- lightbox ---------- */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(13,13,15,0.92);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: zoom-out;
+}
+.lightbox.is-open { display: flex; }
+.lightbox-content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: default;
+}
+.lightbox img#lightboxImg {
+  max-width: 82vw;
+  max-height: 78vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 14px;
+  border: 2px solid var(--lime);
+  box-shadow: 0 0 0 10px rgba(196,245,54,0.08);
+  display: block;
+}
+.lightbox-ref-thumb {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 76px;
+  height: 76px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid var(--bg);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+  z-index: 2;
+}
+.lightbox-ref-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.lightbox-info {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  color: var(--lime);
+  text-transform: lowercase;
+}
+.lightbox-info .card-verdict-dot { width: 13px; height: 13px; }
+.lightbox-info .card-verdict-text { font-size: 15px; }
+.lightbox-info .card-verdict-unknown { font-size: 13px; }
+.lightbox-close {
+  position: absolute;
+  top: 24px;
+  right: 28px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--text);
+  font-size: 16px;
+  cursor: pointer;
+}
+.lightbox-close:hover { border-color: var(--pink); color: var(--pink); }

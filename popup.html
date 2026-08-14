@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>DressUp</title>
+<link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="app">
+
+    <header class="topbar">
+      <div class="wordmark">
+        <span class="wordmark-main">Dress</span><span class="wordmark-accent">Up</span>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab is-active" data-tab="fit" role="tab" aria-selected="true">your fit</button>
+      <button class="tab" data-tab="boards" role="tab" aria-selected="false">lookbooks</button>
+    </nav>
+
+    <!-- YOUR FIT -->
+    <section class="panel is-active" data-panel="fit">
+      <p class="panel-hint">upload one clear full-body pic. we reuse it for every try-on and every lookbook.</p>
+
+      <div class="polaroid" id="polaroidDrop">
+        <div class="polaroid-frame" id="polaroidFrame">
+          <img id="userPhotoImg" class="polaroid-img hidden" alt="Your uploaded photo" />
+          <div class="polaroid-empty" id="polaroidEmpty">
+            <span class="plus">+</span>
+            <span class="polaroid-empty-text">drop pic<br/>or click</span>
+          </div>
+        </div>
+        <div class="polaroid-caption" id="polaroidCaption">no photo yet</div>
+      </div>
+
+      <input type="file" id="fileInput" accept="image/*" class="hidden" />
+
+      <button class="btn btn-ghost" id="removePhotoBtn" style="display:none;">remove photo</button>
+    </section>
+
+    <!-- BOARDS -->
+    <section class="panel" data-panel="boards">
+
+      <!-- board list view -->
+      <div class="board-view" id="boardListView">
+        <p class="panel-hint">right-click any inspiration pic anywhere on the web → <span class="pill">add to DressUp lookbook</span>. 5 images per lookbook.</p>
+
+        <div class="board-create-row">
+          <input type="text" id="newBoardNameInput" class="board-name-input-inline" placeholder="new lookbook name" maxlength="40" />
+          <button class="btn-mini" id="createBoardBtn">+ create</button>
+        </div>
+
+        <div class="board-list" id="boardList"></div>
+        <p class="empty-hint hidden" id="boardsEmptyHint">create new lookbook first to add images.</p>
+      </div>
+
+      <!-- board detail view -->
+      <div class="board-view hidden" id="boardDetailView">
+        <button class="link-btn back-link" id="backToBoardsBtn">← all lookbooks</button>
+
+        <div class="board-name-row">
+          <input type="text" id="boardNameInput" class="board-name-input" maxlength="40" />
+        </div>
+
+        <div class="board-grid" id="boardGrid"></div>
+
+        <button class="btn btn-stamp hidden" id="startAnalysisBtn">✦ start analysis ✦</button>
+        <button class="btn btn-ghost hidden" id="viewResultsBtn">view results</button>
+        <p class="board-status" id="boardStatusText"></p>
+
+        <button class="link-btn danger-link" id="deleteBoardBtn">delete lookbook</button>
+      </div>
+
+    </section>
+
+    <footer class="footer">
+      <button class="link-btn" id="historyBtn">your lookbooks</button>
+    </footer>
+  </div>
+
+  <script src="lib/imageUtils.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>
